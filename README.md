@@ -13,6 +13,14 @@ Automatically dismiss GitHub Mobile's 2FA verification dialog after approval.
 
 Every time you approve a 2FA push notification in the GitHub app, a "Verification request approved" dialog blocks the screen until you tap CLOSE. This module removes that friction by hooking the dialog's Compose state machine and finishing the activity as soon as the approval completes.
 
+<table>
+<tr><th>Stock</th><th>Patched</th></tr>
+<tr>
+  <td><img src="https://github.com/user-attachments/assets/ffe91011-521d-455a-9f64-c5d7e5618382" width="280" alt="Stock GitHub 2FA dialog" /></td>
+  <td><img src="https://github.com/user-attachments/assets/3a3f9a3d-4391-45de-be03-04e65c515f67" width="280" alt="Patched auto-dismiss" /></td>
+</tr>
+</table>
+
 ## Requirements
 
 - Android 10 (API 29) or higher
