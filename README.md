@@ -14,8 +14,8 @@ Hooks the `TwoFactorDialog` state machine via [LSPosed](https://github.com/JingM
 
 Two hooks, no UI. Hook targets are resolved by type signature, not obfuscated names, so it survives routine ProGuard shuffles across app updates.
 
-1. `TwoFactorActivity.onCreate()` -- captures a `WeakReference<Activity>`
-2. Static state mapper (returns the dialog state enum) -- when `FINISHED_APPROVED`, posts `activity.finish()` via main handler
+1. `TwoFactorActivity.onCreate()`:captures a `WeakReference<Activity>`
+2. Static state mapper (returns the dialog state enum):when `FINISHED_APPROVED`, posts `activity.finish()` via main handler
 
 ## Install
 

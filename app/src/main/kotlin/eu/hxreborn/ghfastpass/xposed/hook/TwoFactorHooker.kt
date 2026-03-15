@@ -14,7 +14,6 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 object TwoFactorHooker {
-
     private const val TWO_FACTOR_ACTIVITY =
         "com.github.android.twofactor.TwoFactorActivity"
     private const val TWO_FACTOR_DIALOG =
@@ -26,16 +25,23 @@ object TwoFactorHooker {
 
     private lateinit var module: XposedModule
 
-    fun hook(module: XposedModule, classLoader: ClassLoader) {
+    fun hook(
+        module: XposedModule,
+        classLoader: ClassLoader,
+    ) {
         this.module = module
         val dialogClass = classLoader.loadClass(TWO_FACTOR_DIALOG)
         val activityClass = classLoader.loadClass(TWO_FACTOR_ACTIVITY)
 
-        val stateEnum = dialogClass.findFinishedApprovedEnum()
-            ?: return module.log("$TWO_FACTOR_DIALOG state enum not found")
+        // Enum class name is obfuscated but FINISHED_APPROVED survives in Kotlin metadata
+        val stateEnum =
+            dialogClass.findFinishedApprovedEnum()
+                ?: return module.log("$TWO_FACTOR_DIALOG state enum not found")
 
-        val stateMapper = dialogClass.findStateMapper(stateEnum)
-            ?: return module.log("State mapper method not found on $TWO_FACTOR_DIALOG")
+        // State mapper name is obfuscated (currently "j"), match by signature instead
+        val stateMapper =
+            dialogClass.findStateMapper(stateEnum)
+                ?: return module.log("State mapper method not found on $TWO_FACTOR_DIALOG")
 
         module.hook(
             activityClass.getDeclaredMethod("onCreate", Bundle::class.java),
@@ -79,10 +85,13 @@ object TwoFactorHooker {
                 val state = callback.result as? Enum<*> ?: return
                 if (state.name != TARGET_STATE) return
 
-                val activity = pendingActivity?.get()
-                    ?.takeUnless { it.isFinishing } ?: return
+                val activity =
+                    pendingActivity
+                        ?.get()
+                        ?.takeUnless { it.isFinishing } ?: return
                 pendingActivity = null
                 module.log("Auto-dismissing verification dialog")
+                // Post to avoid side effects during Compose composition
                 Handler(Looper.getMainLooper()).post { activity.finish() }
             }
         }

@@ -92,8 +92,20 @@ ktlint {
     ignoreFailures.set(false)
 }
 
+// AGP 9 built-in Kotlin doesn't register source sets that the ktlint plugin can discover.
+// Run ktlint 1.8.0 directly on source files as a workaround.
+val ktlintSrc by tasks.registering(JavaExec::class) {
+    group = "verification"
+    description = "Runs ktlint 1.8.0 on Kotlin source files"
+    mainClass.set("com.pinterest.ktlint.Main")
+    classpath = configurations.detachedConfiguration(
+        dependencies.create("com.pinterest.ktlint:ktlint-cli:1.8.0"),
+    )
+    args("src/**/*.kt")
+}
+
 tasks.named("check").configure {
-    dependsOn("ktlintCheck")
+    dependsOn(ktlintSrc)
 }
 
 dependencies {
