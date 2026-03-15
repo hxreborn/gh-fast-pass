@@ -1,0 +1,69 @@
+# Gradle
+.gradle/
+**/build/
+.kotlin/
+.kls_database.db
+
+# IDE/Editor
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.code-workspace
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.py[cod]
+*$py.class
+.python-version
+venv/
+.env/
+env/
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+
+# Local configuration
+local.properties
+.mcp.json
+*.patch
+.env
+.env.local
+
+# Logs / tmp
+.DS_Store
+.directory
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*.db
+
+# Native build outputs
+.cxx/
+.externalNativeBuild/
+
+# Generated output
+captures/
+outputs/
+test-output/
+*.apk
+*.aab
+*.aar
+
+# Signing artifacts
+*.jks
+*.keystore
+release.keystore
+
+# Exceptions - keep these tracked
+!gradle/wrapper/gradle-wrapper.properties
+!gradle/libs.versions.toml

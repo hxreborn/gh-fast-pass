@@ -1,0 +1,14 @@
+[versions]
+kotlin = "2.3.10"
+agp = "9.1.0"
+libxposedApi = "100"
+libxposedService = "100-1.0.0"
+ktlint = "14.0.1"
+
+[libraries]
+libxposed-api = { module = "io.github.libxposed:api", version.ref = "libxposedApi" }
+libxposed-service = { module = "io.github.libxposed:service", version.ref = "libxposedService" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
