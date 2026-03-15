@@ -1,7 +1,6 @@
 # GH FastPass
 
-Automatically dismiss GitHub Mobile's verification dialog after approval.
-An Xposed module for GitHub Mobile that closes the verification screen once the request is approved. Works for 2FA sign-ins, sudo confirmations, and device verification prompts.
+Automatically dismiss GitHub Mobile's 2FA verification dialog after approval.
 
 <p align="center">
   <a href="https://developer.android.com"><img src="https://img.shields.io/badge/Android-10+-3DDC84?style=flat&logo=android&logoColor=white" alt="Android 10+" /></a>
@@ -13,13 +12,6 @@ An Xposed module for GitHub Mobile that closes the verification screen once the 
 ## Overview
 
 Every time you approve a 2FA push notification in the GitHub app, a "Verification request approved" dialog blocks the screen until you tap CLOSE. This module removes that friction by hooking the dialog's Compose state machine and finishing the activity as soon as the approval completes.
-
-No UI, no settings, no background service. Two hooks:
-
-1. Captures the hosting `TwoFactorActivity` on creation
-2. Monitors the dialog state mapper for `FINISHED_APPROVED` and posts `activity.finish()`
-
-Hook targets are resolved by type signature instead of obfuscated method names, so the module survives routine ProGuard changes across GitHub app updates.
 
 ## Requirements
 
@@ -46,10 +38,20 @@ Hook targets are resolved by type signature instead of obfuscated method names, 
 git clone --recurse-submodules https://github.com/hxreborn/gh-fast-pass.git
 cd gh-fast-pass
 ./gradlew buildLibxposed
-./gradlew :app:assembleDebug
+./gradlew assembleRelease
 ```
 
-JDK 21, Android SDK.
+Requires JDK 21 and Android SDK. Configure `local.properties`:
+
+```properties
+sdk.dir=/path/to/android/sdk
+
+# Optional signing
+RELEASE_STORE_FILE=<path/to/keystore.jks>
+RELEASE_STORE_PASSWORD=<store_password>
+RELEASE_KEY_ALIAS=<key_alias>
+RELEASE_KEY_PASSWORD=<key_password>
+```
 
 ## License
 
