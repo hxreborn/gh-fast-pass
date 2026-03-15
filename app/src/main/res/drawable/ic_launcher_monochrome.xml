@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Checkmark -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M44.5,62.5L36,54l-2.8,2.8L44.5,68.1l22-22l-2.8-2.8z" />
+
+    <!-- Speed lines -->
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.6"
+        android:pathData="M28,48h8v2.5h-8z" />
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.4"
+        android:pathData="M24,54h10v2.5h-10z" />
+    <path
+        android:fillColor="#000000"
+        android:fillAlpha="0.2"
+        android:pathData="M28,60h8v2.5h-8z" />
+
+</vector>

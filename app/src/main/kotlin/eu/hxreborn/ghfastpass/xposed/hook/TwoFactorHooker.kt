@@ -24,7 +24,10 @@ object TwoFactorHooker {
     @Volatile
     private var pendingActivity: WeakReference<Activity>? = null
 
+    private lateinit var module: XposedModule
+
     fun hook(module: XposedModule, classLoader: ClassLoader) {
+        this.module = module
         val dialogClass = classLoader.loadClass(TWO_FACTOR_DIALOG)
         val activityClass = classLoader.loadClass(TWO_FACTOR_ACTIVITY)
 
@@ -79,6 +82,7 @@ object TwoFactorHooker {
                 val activity = pendingActivity?.get()
                     ?.takeUnless { it.isFinishing } ?: return
                 pendingActivity = null
+                module.log("Auto-dismissing verification dialog")
                 Handler(Looper.getMainLooper()).post { activity.finish() }
             }
         }

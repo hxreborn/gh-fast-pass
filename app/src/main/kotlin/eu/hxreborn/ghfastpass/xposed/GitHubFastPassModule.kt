@@ -1,5 +1,6 @@
 package eu.hxreborn.ghfastpass.xposed
 
+import eu.hxreborn.ghfastpass.BuildConfig
 import eu.hxreborn.ghfastpass.xposed.hook.TwoFactorHooker
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
@@ -11,10 +12,15 @@ class GitHubFastPassModule(
     param: ModuleLoadedParam,
 ) : XposedModule(base, param) {
 
+    init {
+        log("GH FastPass v${BuildConfig.VERSION_NAME} loaded")
+    }
+
     override fun onPackageLoaded(param: PackageLoadedParam) {
         if (param.packageName != GITHUB_PACKAGE || !param.isFirstPackage) return
         runCatching { TwoFactorHooker.hook(this, param.classLoader) }
-            .onFailure { log("Hook failed", it) }
+            .onSuccess { log("Hooks registered for $GITHUB_PACKAGE") }
+            .onFailure { log("Hook registration failed", it) }
     }
 
     companion object {
