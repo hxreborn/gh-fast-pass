@@ -1,0 +1,109 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to build (e.g., v1.0.0)'
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+          fetch-depth: 0
+          submodules: recursive
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Decode keystore
+        run: echo "${{ secrets.RELEASE_KEYSTORE }}" | base64 -d > ${{ github.workspace }}/release.keystore
+
+      - name: Calculate version
+        id: version
+        run: |
+          TAG="${{ inputs.tag || github.ref_name }}"
+          VERSION_NAME="${TAG#v}"
+          MAJOR=${VERSION_NAME%%.*}
+          COMMITS=$(git rev-list --count HEAD)
+          VERSION_CODE=$((MAJOR * 10000 + COMMITS))
+          echo "name=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "code=$VERSION_CODE" >> $GITHUB_OUTPUT
+          if [[ "$VERSION_NAME" =~ (rc|alpha|beta) ]]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build libxposed to mavenLocal
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: ./gradlew buildLibxposed
+
+      - name: Build APKs
+        run: |
+          ./gradlew assembleDebug assembleRelease \
+            -Pversion.name=${{ steps.version.outputs.name }} \
+            -Pversion.code=${{ steps.version.outputs.code }}
+        env:
+          RELEASE_STORE_FILE: ${{ github.workspace }}/release.keystore
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gh-fast-pass-v${{ steps.version.outputs.name }}
+          path: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/apk/debug/*.apk
+
+      - name: Generate release notes
+        id: changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: .github/cliff.toml
+          args: --latest --strip header
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          prerelease: ${{ steps.version.outputs.prerelease }}
+          body: ${{ steps.changelog.outputs.content }}
+          files: app/build/outputs/apk/release/*.apk
+
+      - name: Mirror to Xposed-Modules-Repo
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: Xposed-Modules-Repo/eu.hxreborn.ghfastpass
+          token: ${{ secrets.XPOSED_REPO_PAT }}
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          prerelease: ${{ steps.version.outputs.prerelease }}
+          body: ${{ steps.changelog.outputs.content }}
+          files: app/build/outputs/apk/release/*.apk
+          fail_on_unmatched_files: true
+          make_latest: true
