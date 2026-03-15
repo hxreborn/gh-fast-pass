@@ -63,9 +63,8 @@ if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
 	exit 1
 fi
 
-MAJOR="${VERSION%%.*}"
-COMMIT_COUNT=$(($(git rev-list --count HEAD) + 1))
-VERSION_CODE=$((MAJOR * 10000 + COMMIT_COUNT))
+IFS='.-' read -r MAJOR MINOR PATCH _ <<< "$VERSION"
+VERSION_CODE=$((MAJOR * 1000 + MINOR * 10 + PATCH))
 
 sed -i "s/^version\.code=.*/version.code=${VERSION_CODE}/" gradle.properties
 sed -i "s/^version\.name=.*/version.name=${VERSION}/" gradle.properties
