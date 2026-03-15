@@ -3,6 +3,7 @@
 **/build/
 .kotlin/
 .kls_database.db
+gradle/gradle-daemon-jvm.properties
 
 # IDE/Editor
 .idea/

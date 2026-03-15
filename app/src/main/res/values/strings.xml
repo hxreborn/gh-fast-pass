@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">GH FastPass</string>
-    <string name="app_desc">Auto-dismiss GitHub mobile verification dialogs for 2FA logins, sudo challenges, and device verifications</string>
+    <string name="app_desc">Automatically dismiss GitHub Mobile\'s 2FA verification dialog after approval</string>
 </resources>

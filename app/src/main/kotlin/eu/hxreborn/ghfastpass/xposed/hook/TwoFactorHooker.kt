@@ -14,10 +14,8 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 object TwoFactorHooker {
-    private const val TWO_FACTOR_ACTIVITY =
-        "com.github.android.twofactor.TwoFactorActivity"
-    private const val TWO_FACTOR_DIALOG =
-        "com.github.android.twofactor.TwoFactorDialog"
+    private const val TWO_FACTOR_ACTIVITY = "com.github.android.twofactor.TwoFactorActivity"
+    private const val TWO_FACTOR_DIALOG = "com.github.android.twofactor.TwoFactorDialog"
     private const val TARGET_STATE = "FINISHED_APPROVED"
 
     @Volatile
@@ -30,6 +28,7 @@ object TwoFactorHooker {
         classLoader: ClassLoader,
     ) {
         this.module = module
+
         val dialogClass = classLoader.loadClass(TWO_FACTOR_DIALOG)
         val activityClass = classLoader.loadClass(TWO_FACTOR_ACTIVITY)
 
@@ -38,7 +37,7 @@ object TwoFactorHooker {
             dialogClass.findFinishedApprovedEnum()
                 ?: return module.log("$TWO_FACTOR_DIALOG state enum not found")
 
-        // State mapper name is obfuscated (currently "j"), match by signature instead
+        // State mapper name is obfuscated so match by signature instead
         val stateMapper =
             dialogClass.findStateMapper(stateEnum)
                 ?: return module.log("State mapper method not found on $TWO_FACTOR_DIALOG")
@@ -52,22 +51,19 @@ object TwoFactorHooker {
 
     private fun Class<*>.findFinishedApprovedEnum(): Class<*>? =
         declaredClasses.firstOrNull { cls ->
-            cls.isEnum &&
-                cls.enumConstants.orEmpty().any {
-                    (it as Enum<*>).name == TARGET_STATE
-                }
+            cls.isEnum && cls.enumConstants.orEmpty().any { (it as Enum<*>).name == TARGET_STATE }
         }
 
     private fun Class<*>.findStateMapper(enumType: Class<*>): Method? =
-        declaredMethods.firstOrNull { m ->
-            Modifier.isStatic(m.modifiers) &&
-                m.parameterCount == 1 &&
-                m.returnType == enumType
+        declaredMethods.firstOrNull { method ->
+            Modifier.isStatic(method.modifiers) && method.parameterCount == 1 &&
+                method.returnType == enumType
         }
 
     @XposedHooker
     class CaptureActivityHooker : XposedInterface.Hooker {
         companion object {
+            @Suppress("unused")
             @JvmStatic
             @AfterInvocation
             fun after(callback: AfterHookCallback) {
@@ -79,20 +75,22 @@ object TwoFactorHooker {
     @XposedHooker
     class AutoDismissHooker : XposedInterface.Hooker {
         companion object {
+            @Suppress("unused")
             @JvmStatic
             @AfterInvocation
             fun after(callback: AfterHookCallback) {
                 val state = callback.result as? Enum<*> ?: return
                 if (state.name != TARGET_STATE) return
 
-                val activity =
-                    pendingActivity
-                        ?.get()
-                        ?.takeUnless { it.isFinishing } ?: return
+                val activity = pendingActivity?.get()?.takeUnless { it.isFinishing } ?: return
                 pendingActivity = null
+
                 module.log("Auto-dismissing verification dialog")
+
                 // Post to avoid side effects during Compose composition
-                Handler(Looper.getMainLooper()).post { activity.finish() }
+                Handler(Looper.getMainLooper()).post {
+                    activity.finish()
+                }
             }
         }
     }
