@@ -3,7 +3,7 @@ kotlin = "2.3.10"
 agp = "9.1.0"
 libxposedApi = "101.0.0"
 libxposedService = "101.0.0"
-ktlint = "14.0.1"
+ktlint = "14.2.0"
 
 [libraries]
 libxposed-api = { module = "io.github.libxposed:api", version.ref = "libxposedApi" }
