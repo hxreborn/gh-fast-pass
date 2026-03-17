@@ -48,8 +48,7 @@ object TwoFactorHooker {
             if (state.name != TARGET_STATE) return@intercept result
 
             val activity =
-                pendingActivity?.get()?.takeUnless { it.isFinishing }
-                    ?: return@intercept result
+                pendingActivity?.get()?.takeUnless { it.isFinishing } ?: return@intercept result
             pendingActivity = null
 
             module.log(Log.INFO, TAG, "Auto-dismissing verification dialog")
@@ -62,14 +61,12 @@ object TwoFactorHooker {
 
     private fun Class<*>.findFinishedApprovedEnum(): Class<*>? =
         declaredClasses.firstOrNull { cls ->
-            cls.isEnum &&
-                cls.enumConstants.orEmpty().any { (it as Enum<*>).name == TARGET_STATE }
+            cls.isEnum && cls.enumConstants.orEmpty().any { (it as Enum<*>).name == TARGET_STATE }
         }
 
     private fun Class<*>.findStateMapper(enumType: Class<*>): Method? =
         declaredMethods.firstOrNull { method ->
-            Modifier.isStatic(method.modifiers) &&
-                method.parameterCount == 1 &&
+            Modifier.isStatic(method.modifiers) && method.parameterCount == 1 &&
                 method.returnType == enumType
         }
 }

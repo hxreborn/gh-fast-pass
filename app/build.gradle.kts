@@ -98,9 +98,10 @@ val ktlintSrc by tasks.registering(JavaExec::class) {
     group = "verification"
     description = "Runs ktlint 1.8.0 on Kotlin source files"
     mainClass.set("com.pinterest.ktlint.Main")
-    classpath = configurations.detachedConfiguration(
-        dependencies.create("com.pinterest.ktlint:ktlint-cli:1.8.0"),
-    )
+    classpath =
+        configurations.detachedConfiguration(
+            dependencies.create("com.pinterest.ktlint:ktlint-cli:1.8.0"),
+        )
     args("src/**/*.kt")
 }
 
