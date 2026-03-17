@@ -4,7 +4,7 @@ Automatically dismiss GitHub Mobile's 2FA verification dialog after approval.
 
 <p align="center">
   <a href="https://developer.android.com"><img src="https://img.shields.io/badge/Android-10+-3DDC84?style=flat&logo=android&logoColor=white" alt="Android 10+" /></a>
-  <a href="https://github.com/LSPosed/LSPosed"><img src="https://img.shields.io/badge/LSPosed_API-100-8F00FF?style=flat" alt="LSPosed API 100" /></a>
+  <a href="https://github.com/LSPosed/LSPosed"><img src="https://img.shields.io/badge/LSPosed_API-101-8F00FF?style=flat" alt="LSPosed API 101" /></a>
   <a href="https://kotlinlang.org"><img src="https://img.shields.io/badge/Kotlin-2.3.10-7F52FF?style=flat&logo=kotlin&logoColor=white" alt="Kotlin" /></a>
   <a href="https://gradle.org"><img src="https://img.shields.io/badge/Gradle-9.4-02303A?style=flat&logo=gradle&logoColor=white" alt="Gradle" /></a>
 </p>
@@ -28,7 +28,7 @@ Every time you approve a 2FA push notification in the GitHub app, a "Verificatio
 - GitHub mobile app (`com.github.android`)
 
 > [!NOTE]
-> Tested with GitHub Mobile `1.249.1`. Other versions should work as long as GitHub doesn't restructure the 2FA dialog internals.
+> Tested with GitHub Mobile `v1.249.1`. Other versions should work as long as GitHub doesn't restructure the 2FA dialog internals.
 
 ## Install
 
