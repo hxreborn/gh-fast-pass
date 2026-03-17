@@ -9,23 +9,12 @@ tasks.register<Exec>("buildLibxposedApi") {
     commandLine(
         "./gradlew",
         ":api:publishApiPublicationToMavenLocal",
-        "-x",
-        ":checks:compileKotlin",
         "--no-daemon",
     )
 }
 
 tasks.register<Exec>("buildLibxposedService") {
     workingDir = file("libxposed/service")
-    val interfaceBuild = file("libxposed/service/interface/build.gradle.kts")
-    doFirst {
-        interfaceBuild.writeText(
-            interfaceBuild.readText().replace(
-                """namespace = "io.github.libxposed.service"""",
-                """namespace = "io.github.libxposed.iface"""",
-            ),
-        )
-    }
     commandLine(
         "./gradlew",
         ":interface:publishInterfacePublicationToMavenLocal",
