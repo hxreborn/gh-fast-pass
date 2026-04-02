@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.3.10"
 agp = "9.1.0"
-libxposedApi = "101.0.0"
+libxposedApi = "101.0.1"
 libxposedService = "101.0.0"
 ktlint = "14.0.1"
 
