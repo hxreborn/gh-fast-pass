@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import io.github.libxposed.api.XposedModule
+import eu.hxreborn.ghfastpass.xposed.module
 import java.lang.ref.WeakReference
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -19,10 +19,7 @@ object TwoFactorHook {
     @Volatile
     private var pendingActivity: WeakReference<Activity>? = null
 
-    fun hook(
-        module: XposedModule,
-        classLoader: ClassLoader,
-    ) {
+    fun hook(classLoader: ClassLoader) {
         val dialogClass = classLoader.loadClass(DIALOG)
         val activityClass = classLoader.loadClass(ACTIVITY)
 

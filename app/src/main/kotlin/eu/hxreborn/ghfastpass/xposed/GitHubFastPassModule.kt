@@ -7,8 +7,13 @@ import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface.ModuleLoadedParam
 import io.github.libxposed.api.XposedModuleInterface.PackageReadyParam
 
+@PublishedApi
+internal lateinit var module: GitHubFastPassModule
+    private set
+
 class GitHubFastPassModule : XposedModule() {
     override fun onModuleLoaded(param: ModuleLoadedParam) {
+        module = this
         log(Log.INFO, TAG, "GH FastPass v${BuildConfig.VERSION_NAME} loaded")
     }
 
@@ -16,7 +21,7 @@ class GitHubFastPassModule : XposedModule() {
         if (param.packageName != GITHUB_PACKAGE || !param.isFirstPackage) return
 
         runCatching {
-            TwoFactorHook.hook(this, param.classLoader)
+            TwoFactorHook.hook(param.classLoader)
         }.onSuccess {
             log(Log.INFO, TAG, "Hooks registered for $GITHUB_PACKAGE")
         }.onFailure {
