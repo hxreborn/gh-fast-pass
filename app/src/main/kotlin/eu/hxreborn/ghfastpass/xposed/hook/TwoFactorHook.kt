@@ -12,6 +12,7 @@ import java.lang.reflect.Modifier
 
 object TwoFactorHook {
     private const val TAG = "GHFastPass"
+    private const val GITHUB_PACKAGE = "com.github.android"
     private const val ACTIVITY = "com.github.android.twofactor.TwoFactorActivity"
     private const val DIALOG = "com.github.android.twofactor.TwoFactorDialog"
     private const val TARGET_STATE = "FINISHED_APPROVED"
@@ -24,14 +25,18 @@ object TwoFactorHook {
         val activityClass = classLoader.loadClass(ACTIVITY)
 
         // Enum class name is obfuscated but FINISHED_APPROVED survives in metadata
-        val stateEnum =
-            dialogClass.findFinishedApprovedEnum()
-                ?: return module.log(Log.WARN, TAG, "$DIALOG state enum not found")
+        val stateEnum = dialogClass.findFinishedApprovedEnum()
+        if (stateEnum == null) {
+            module.log(Log.WARN, TAG, "missing state-enum pkg=$GITHUB_PACKAGE dialog=$DIALOG")
+            return
+        }
 
         // State mapper name is obfuscated so match by signature instead
-        val stateMapper =
-            dialogClass.findStateMapper(stateEnum)
-                ?: return module.log(Log.WARN, TAG, "State mapper not found on $DIALOG")
+        val stateMapper = dialogClass.findStateMapper(stateEnum)
+        if (stateMapper == null) {
+            module.log(Log.WARN, TAG, "missing state-mapper pkg=$GITHUB_PACKAGE dialog=$DIALOG")
+            return
+        }
 
         val onCreate = activityClass.getDeclaredMethod("onCreate", Bundle::class.java)
         module.hook(onCreate).intercept { chain ->
@@ -48,7 +53,7 @@ object TwoFactorHook {
                 pendingActivity?.get()?.takeUnless { it.isFinishing } ?: return@intercept result
             pendingActivity = null
 
-            module.log(Log.INFO, TAG, "Auto-dismissing verification dialog")
+            module.log(Log.INFO, TAG, "dismiss verification-dialog pkg=$GITHUB_PACKAGE")
 
             // Post to avoid side effects during Compose composition
             Handler(Looper.getMainLooper()).post { activity.finish() }

@@ -14,7 +14,7 @@ internal lateinit var module: GitHubFastPassModule
 class GitHubFastPassModule : XposedModule() {
     override fun onModuleLoaded(param: ModuleLoadedParam) {
         module = this
-        log(Log.INFO, TAG, "GH FastPass v${BuildConfig.VERSION_NAME} loaded")
+        log(Log.INFO, TAG, "loaded module version=${BuildConfig.VERSION_NAME}")
     }
 
     override fun onPackageReady(param: PackageReadyParam) {
@@ -23,9 +23,9 @@ class GitHubFastPassModule : XposedModule() {
         runCatching {
             TwoFactorHook.hook(param.classLoader)
         }.onSuccess {
-            log(Log.INFO, TAG, "Hooks registered for $GITHUB_PACKAGE")
+            log(Log.INFO, TAG, "registered hooks pkg=$GITHUB_PACKAGE")
         }.onFailure {
-            log(Log.ERROR, TAG, "Hook registration failed", it)
+            log(Log.ERROR, TAG, "failed hook-registration pkg=$GITHUB_PACKAGE", it)
         }
     }
 
