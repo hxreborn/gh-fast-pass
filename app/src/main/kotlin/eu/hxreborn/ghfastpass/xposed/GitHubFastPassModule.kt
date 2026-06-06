@@ -2,7 +2,7 @@ package eu.hxreborn.ghfastpass.xposed
 
 import android.util.Log
 import eu.hxreborn.ghfastpass.BuildConfig
-import eu.hxreborn.ghfastpass.xposed.hook.TwoFactorHooker
+import eu.hxreborn.ghfastpass.xposed.hook.TwoFactorHook
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface.ModuleLoadedParam
 import io.github.libxposed.api.XposedModuleInterface.PackageReadyParam
@@ -16,7 +16,7 @@ class GitHubFastPassModule : XposedModule() {
         if (param.packageName != GITHUB_PACKAGE || !param.isFirstPackage) return
 
         runCatching {
-            TwoFactorHooker.hook(this, param.classLoader)
+            TwoFactorHook.hook(this, param.classLoader)
         }.onSuccess {
             log(Log.INFO, TAG, "Hooks registered for $GITHUB_PACKAGE")
         }.onFailure {

@@ -10,7 +10,7 @@ import java.lang.ref.WeakReference
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
-object TwoFactorHooker {
+object TwoFactorHook {
     private const val TAG = "GHFastPass"
     private const val ACTIVITY = "com.github.android.twofactor.TwoFactorActivity"
     private const val DIALOG = "com.github.android.twofactor.TwoFactorDialog"
