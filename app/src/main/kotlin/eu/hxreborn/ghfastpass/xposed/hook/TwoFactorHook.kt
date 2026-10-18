@@ -24,15 +24,7 @@ object TwoFactorHook {
         val dialogClass = classLoader.loadClass(DIALOG)
         val activityClass = classLoader.loadClass(ACTIVITY)
 
-        // Enum class name is obfuscated but FINISHED_APPROVED survives in metadata
-        val stateEnum = dialogClass.findFinishedApprovedEnum()
-        if (stateEnum == null) {
-            module.log(Log.WARN, TAG, "missing state-enum pkg=$GITHUB_PACKAGE dialog=$DIALOG")
-            return
-        }
-
-        // State mapper name is obfuscated so match by signature instead
-        val stateMapper = dialogClass.findStateMapper(stateEnum)
+        val stateMapper = dialogClass.findStateMapper()
         if (stateMapper == null) {
             module.log(Log.WARN, TAG, "missing state-mapper pkg=$GITHUB_PACKAGE dialog=$DIALOG")
             return
@@ -55,20 +47,17 @@ object TwoFactorHook {
 
             module.log(Log.INFO, TAG, "dismiss verification-dialog pkg=$GITHUB_PACKAGE")
 
-            // Post to avoid side effects during Compose composition
             Handler(Looper.getMainLooper()).post { activity.finish() }
             result
         }
     }
 
-    private fun Class<*>.findFinishedApprovedEnum(): Class<*>? =
-        declaredClasses.firstOrNull { cls ->
-            cls.isEnum && cls.enumConstants.orEmpty().any { (it as Enum<*>).name == TARGET_STATE }
-        }
-
-    private fun Class<*>.findStateMapper(enumType: Class<*>): Method? =
+    private fun Class<*>.findStateMapper(): Method? =
         declaredMethods.firstOrNull { method ->
             Modifier.isStatic(method.modifiers) && method.parameterCount == 1 &&
-                method.returnType == enumType
+                method.returnType.hasApprovedConstant()
         }
+
+    private fun Class<*>.hasApprovedConstant(): Boolean =
+        isEnum && enumConstants.orEmpty().any { (it as Enum<*>).name == TARGET_STATE }
 }
