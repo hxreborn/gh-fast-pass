@@ -43,9 +43,8 @@ Every time you approve a 2FA push notification in the GitHub app, a "Verificatio
 ## Build
 
 ```bash
-git clone --recurse-submodules https://github.com/hxreborn/gh-fast-pass.git
+git clone https://github.com/hxreborn/gh-fast-pass.git
 cd gh-fast-pass
-./gradlew buildLibxposed
 ./gradlew assembleRelease
 ```
 
