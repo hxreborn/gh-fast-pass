@@ -20,12 +20,13 @@ class GitHubFastPassModule : XposedModule() {
     override fun onPackageReady(param: PackageReadyParam) {
         if (param.packageName != GITHUB_PACKAGE || !param.isFirstPackage) return
 
-        runCatching {
+        try {
             TwoFactorHook.hook(param.classLoader)
-        }.onSuccess {
             log(Log.INFO, TAG, "registered hooks pkg=$GITHUB_PACKAGE")
-        }.onFailure {
-            log(Log.ERROR, TAG, "failed hook-registration pkg=$GITHUB_PACKAGE", it)
+        } catch (e: Exception) {
+            log(Log.ERROR, TAG, "failed hook-registration pkg=$GITHUB_PACKAGE", e)
+        } catch (e: LinkageError) {
+            log(Log.ERROR, TAG, "failed hook-registration pkg=$GITHUB_PACKAGE", e)
         }
     }
 
